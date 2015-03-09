@@ -6,21 +6,20 @@ public class PlayerScript : MonoBehaviour {
 
 
 	public float speed = 5.0f;
-	public LayerMask whatToHit;
 	public float rotOffset = 0f;
 	public float closestPointToRotate = 1.5f; // distance from mouse to player where it rotates to mouse pos
-	public Transform bullet;
+
 
 	private Transform ownT;
 	private Rigidbody2D ownR;
 	private Camera cam;
-	private Transform firePos;
+	public GunScript gun; // TEMPORARY, MODIFY WITH WEAPON PICK UP SYSTEM
+
 
 	private float moveH = 0f;
 	private float moveV = 0f;
 
 	private Vector2 mousePos;
-	private Vector2 firingPos;
 	private bool shootNext = false;
 
 
@@ -29,10 +28,8 @@ public class PlayerScript : MonoBehaviour {
 		ownT = GetComponent<Transform>();
 		ownR = GetComponent<Rigidbody2D>();
 		cam = Camera.main;
-		firePos = ownT.Find("FirePosition");
-		if(firePos == null){
-			firePos = ownT;
-		}
+		 
+
 	}
 
 	void Start () {
@@ -56,7 +53,6 @@ public class PlayerScript : MonoBehaviour {
 
 		//shooting direction
 		mousePos = new Vector2(cam.ScreenToWorldPoint(Input.mousePosition).x,cam.ScreenToWorldPoint(Input.mousePosition).y);
-		firingPos = new Vector2(firePos.position.x,firePos.position.y);
 
 
 		//continous rotation towards mouse position 
@@ -74,16 +70,11 @@ public class PlayerScript : MonoBehaviour {
 		}
 
 		if(shootNext){
-			Shoot ();
+			if(gun!=null)gun.Shoot(mousePos);
 			shootNext=false;
 		}
 
 	}
 
-	void Shoot(){
-		Transform instanceBullet = (Transform)Instantiate(bullet,firePos.position,firePos.rotation );
 
-		RaycastHit2D hit = Physics2D.Raycast(firingPos,mousePos-firingPos,100,whatToHit); // hit is the object hit by the raycast, null if none
-
-	}
 }
