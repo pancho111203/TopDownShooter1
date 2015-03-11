@@ -30,8 +30,8 @@ public class BulletScript : MonoBehaviour {
 		ownT.Translate(bulletSpeed*Time.deltaTime,0,0);
 
 		//calculate traveled distance
-		traveledDistance += ((Vector2)transform.position - prevPos).magnitude;
-		prevPos=transform.position;
+		traveledDistance += ((Vector2)ownT.position - prevPos).magnitude;
+		prevPos=ownT.position;
 
 		//detect collision
 		if (distanceToHit!=0 && traveledDistance+offset >= distanceToHit){
