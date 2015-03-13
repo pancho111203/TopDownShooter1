@@ -5,13 +5,16 @@ public class PlayerScript : MonoBehaviour {
 
 	public float speed = 5.0f;
 	public float rotOffset = 0f;
-	public Transform activeWeapon;
+	public GameObject activeWeapon;
+	public int maxWeapons = 10; //max number of weapons that can be carried at once
+	
+	private CollIterator<GameObject> weaponsList;
 
 	private Transform ownT;
 	private Rigidbody2D ownR;
 	private Camera cam;
 
-
+	public float test;
 
 	private float moveH = 0f;
 	private float moveV = 0f;
@@ -25,6 +28,7 @@ public class PlayerScript : MonoBehaviour {
 		ownR = GetComponent<Rigidbody2D>();
 		cam = Camera.main;
 		 
+		weaponsList = new CollIterator<GameObject>(maxWeapons);
 
 	}
 
@@ -34,6 +38,14 @@ public class PlayerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if(Input.GetKeyDown(KeyCode.N)){
+			switchGunSeqUp();
+		}
+		if(Input.GetKeyDown(KeyCode.M)){
+			switchGunSeqDown();
+		}
+
 
 		//input detection
 		moveH = Input.GetAxis("Horizontal");
@@ -85,10 +97,46 @@ public class PlayerScript : MonoBehaviour {
 		coll.transform.position = newPos.position;
 		coll.transform.rotation = newPos.rotation;
 
-		activeWeapon = coll.transform;
-		activeWeapon.GetComponent<GunScript>().pickedUp(ownT);
-		// TODO: System that allows the player to hold many guns and choose one with the mouse scroll or keyboard
+		bool emptyPlace = weaponsList.findFirstEmpty();
+		if(emptyPlace){
+			weaponsList.insert(coll.gameObject);
+			if(activeWeapon!=null)activeWeapon.gameObject.SetActive(false);
+			
+			activeWeapon = coll.gameObject;
+			activeWeapon.GetComponent<GunScript>().pickedUp(ownT);
+		}
+
 	}
 
+	private void switchGun(int i){ // SWitch weapon giving an index
+		if(weaponsList.size>i){
+			GameObject newWep = weaponsList.getElement(i);
+			if(newWep!=null){
+				if(activeWeapon!=null)activeWeapon.gameObject.SetActive(false);
+				newWep.SetActive(true);
+				activeWeapon = newWep;
+			}
+		}
+
+
+	}
+
+	private void switchGunSeqUp(){ // SWitch weapon sequentially -- next gun
+		GameObject newWep = weaponsList.getNext();
+		if(newWep!=null){
+			if(activeWeapon!=null)activeWeapon.gameObject.SetActive(false);
+			newWep.SetActive(true);
+			activeWeapon = newWep;
+		}
+	}
+
+	private void switchGunSeqDown(){ // SWitch weapon sequentially -- previous gun
+		GameObject newWep = weaponsList.getPrev();
+		if(newWep!=null){
+			if(activeWeapon!=null)activeWeapon.gameObject.SetActive(false);
+			newWep.SetActive(true);
+			activeWeapon = newWep;
+		}
+	}
 
 }

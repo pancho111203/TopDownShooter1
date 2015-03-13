@@ -34,7 +34,7 @@ public class BulletScript : MonoBehaviour {
 		prevPos=ownT.position;
 
 		//detect collision
-		if (distanceToHit!=0 && traveledDistance+offset >= distanceToHit){
+		if (distanceToHit!=0 && traveledDistance+offset >= distanceToHit && hit){
 
 			//COLLIDED!!!
 			if(hit.transform.tag == enemyTag){
